@@ -1,0 +1,74 @@
+<div *ngIf="func">
+  <h2>{{func.name}}</h2>
+  <label>Input Parameters:</label>
+  <!--<h4 *ngFor="let p of func.pars">({{p}})</h4>
+  <div>
+    <label>name: </label>{{func.name}}
+  </div>-->
+  <div class="container">
+    <form [formGroup]="myForm" movalidate (ngSubmit)="save(myForm)">
+      <div formArrayName="pars2">
+        <div *ngFor="let par of myForm.controls.pars2.controls; let i=index">
+          <div>
+            <span>Param {{i+1}}</span>
+          </div>
+          <div [formGroupName]="i">
+            <div>
+              <input type="text" formControlName="par">
+              <small [hidden]="myForm.controls.pars2.controls[i].controls.par.valid">
+                Parameter {{i}} is required
+              </small>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button type="submit" [disabled]="!myForm.valid">Submit</button>
+    </form>
+  </div>
+  <button (click)="goBack()">Back</button>
+  <!--<div class="form-group" fromArryName="pars">
+    <div *ngFor="let par of form.controls.pars.controls; let i=index;">
+      <div class="panel panel-primary">
+        <div class="panel-heading">
+          Paramiter number #{{ i+1 }}
+        </div>
+        <div class="panel-body" [formGroupName]="i">
+          <div class="form-group">
+            <input type="text" class="form-control" fromControlName="par">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="form-group">
+    <button type="submeit" class="btn btn-success">Submit</button>
+  </div>-->
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
