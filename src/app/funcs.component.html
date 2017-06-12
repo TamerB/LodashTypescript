@@ -1,0 +1,13 @@
+<ul class="funcs">
+  <li *ngFor="let func of funcs"
+      [class.selected]="func === selectedFunc"
+      (click)="onSelect(func)">
+    <span class="badge">{{func.id}}</span> {{func.name}}
+  </li>
+</ul>
+<div *ngIf="selectedFunc">
+  <h2>
+    {{selectedFunc.name | uppercase}} Fuction
+  </h2>
+  <button (click)="gotoDetail()">View Details</button>
+</div>
