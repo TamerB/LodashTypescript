@@ -2,7 +2,7 @@
   <li *ngFor="let func of funcs"
       [class.selected]="func === selectedFunc"
       (click)="onSelect(func)">
-    <span class="badge">{{func.id}}</span> {{func.name}}
+    <span class="badge">{{func.id}}</span> _.{{func.name}}
   </li>
 </ul>
 <div *ngIf="selectedFunc">

@@ -11,6 +11,7 @@ import 'rxjs/add/operator/switchMap';
 
 import { FuncService }              from './func.service';
 import { Func }                     from './func';
+import { Lodash }                   from './lodash';
 
 @Component({
   selector: 'func-detail',
@@ -24,8 +25,10 @@ export class FuncDetailComponent implements OnInit {
   public myForm: FormGroup;
   public control: FormArray;
   func: Func;
+  lodash: Lodash = new Lodash();
   model: any;
   param: Array<any> = [];
+  result: any = '';
   submitted = false;
   constructor(
     private funcService: FuncService,
@@ -43,7 +46,7 @@ export class FuncDetailComponent implements OnInit {
             this.initPar(),
           ])
         });
-        console.log(this.func);
+        //console.log(this.func);
         this.control = <FormArray>this.myForm.controls['pars2'];
         for (let i = 0; i < this.func.pars2.length - 1; i++) {
           this.addPar();
@@ -66,22 +69,27 @@ export class FuncDetailComponent implements OnInit {
   onSubmit() { this.submitted = true; }
   get diagnostic() { return JSON.stringify(this.model); }
   save(model: Func) {
-    console.log(model);
     this.checkTyp(model);
   }
   checkTyp(model: Func) {
     try {
+      let temp: Array<any> = [];
       for (let item in model['value'].pars2) {
         this.param[item][0] = model['value'].pars2[item].par;
-        if (this.param[item][0].startsWith('{') && this.param[item][0][this.param[item].length -1] === '}') {
-          this.param[item][1] = '[' + this.param[item] + ']';
-          console.log(this.param[item][1]);
-          this.param[item][1] = eval(this.param[item][1])[0];
+        if (this.param[item][0].startsWith('{') && this.param[item][0][this.param[item][0].length - 1] === '}') {
+          try {
+            this.param[item][1] = '[' + this.param[item][0] + ']';
+            this.param[item][1] = eval(this.param[item][1])[0];
+          } catch (exception) {
+            this.param[item][1] = this.param[item][0];
+          }
         } else {
           try {
             this.param[item][1] = eval(this.param[item][0]);
-            this.param[item][1] = typeof this.param[item] === 'function' || typeof this.param[item] === 'object'
-              || typeof this.param[item] === 'boolean' ? this.param[item][1] : this.param[item][0];
+            this.param[item][1] = typeof this.param[item][1] === 'function' ||
+            typeof this.param[item][1] === 'object' || typeof this.param[item][1] === 'boolean' ||
+            typeof this.param[item][1] === 'number' && (this.param[item][1] !== 0 ||
+            this.param[item][0] === '0') ? this.param[item][1] : this.param[item][0];
           } catch (exception) {
             try {
               this.param[item][1] = JSON.parse(this.param[item][0]);
@@ -90,32 +98,21 @@ export class FuncDetailComponent implements OnInit {
             }
           }
         }
-        console.log(this.param[item][1]);
-        console.log(typeof this.param[item][1]);
+        temp.push(this.param[item][1]);
       }
-      /*this.param[0] = model['value'].pars2[0].par;
-      this.param[1] = model['value'].pars2[1].par;
-      this.param[2] = this.param[1];
-
-      if (this.param[1].startsWith('{') && this.param[1][this.param[1].length - 1] === '}') {
-        this.param[2] = "[" + this.param[1] + "]";
-        console.log(this.param[2]);
-        this.param[2] = eval(this.param[2])[0];
-      } else {
-        try {
-          this.param[2] = eval(this.param[1]);
-          this.param[2] = typeof this.param[2] === 'function' || typeof this.param[2] === 'object'
-          || typeof this.param[2] === 'boolean' ? this.param[2] : this.param[1];
-        } catch (e1) {
-          try {
-            this.param[2] = JSON.parse(this.param[1]);
-          } catch (e2) {
-            this.param[2] = isNaN(parseFloat(this.param[1])) ? this.param[1] : parseFloat(this.param[1]);
-          }
+      try {
+        this.result = this.lodash[this.func.name](...temp);
+        if (Array.isArray(this.result) && this.result[0] === undefined) {
+          console.log('wrong input');
+        } else {
+          this.result = JSON.stringify(this.result);
+          this.result = this.result.replace(/\"/gi, '');
+          this.result = this.result.replace(/\\/gi, '');
+          console.log(this.result);
         }
+      } catch (exception) {
+        console.log('function problem');
       }
-      console.log(this.param[2]);
-      console.log(typeof this.param[2]);*/
     } catch (exception) {
       console.log('checkType is making problems');
       console.log(exception);

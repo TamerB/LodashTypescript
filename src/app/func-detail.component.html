@@ -1,5 +1,5 @@
 <div *ngIf="func">
-  <h2>{{func.name}}</h2>
+  <h2>_.{{func.name}}</h2>
   <label>Input Parameters:</label>
   <!--<h4 *ngFor="let p of func.pars">({{p}})</h4>
   <div>
@@ -24,6 +24,9 @@
       </div>
       <button type="submit" [disabled]="!myForm.valid">Submit</button>
     </form>
+  </div>
+  <div *ngIf="result">
+    <h1>Output: </h1><h2>{{result}}</h2>
   </div>
   <button (click)="goBack()">Back</button>
   <!--<div class="form-group" fromArryName="pars">
