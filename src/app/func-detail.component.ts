@@ -12,6 +12,7 @@ import 'rxjs/add/operator/switchMap';
 import { FuncService }              from './func.service';
 import { Func }                     from './func';
 import { Lodash }                   from './lodash';
+import {describe} from "selenium-webdriver/testing";
 
 @Component({
   selector: 'func-detail',
@@ -28,8 +29,12 @@ export class FuncDetailComponent implements OnInit {
   lodash: Lodash = new Lodash();
   model: any;
   param: Array<any> = [];
-  result: any = '';
+  result: any = ['', ''];
   submitted = false;
+  serieName: any;
+  from: any;
+  to: any;
+  options: Object;
   constructor(
     private funcService: FuncService,
     private route: ActivatedRoute,
@@ -98,17 +103,26 @@ export class FuncDetailComponent implements OnInit {
             }
           }
         }
+        console.log(this.param[item][1]);
+        console.log(typeof this.param[item][1]);
         temp.push(this.param[item][1]);
       }
       try {
-        this.result = this.lodash[this.func.name](...temp);
-        if (Array.isArray(this.result) && this.result[0] === undefined) {
+        this.result[0] = this.lodash[this.func.name](...temp);
+        if (Array.isArray(this.result[0]) && this.result[0][0] === undefined) {
           console.log('wrong input');
         } else {
-          this.result = JSON.stringify(this.result);
-          this.result = this.result.replace(/\"/gi, '');
-          this.result = this.result.replace(/\\/gi, '');
-          console.log(this.result);
+          this.result[1] = JSON.stringify(this.result[0]);
+          this.result[1] = this.result[1].replace(/\"/gi, '');
+          this.result[1] = this.result[1].replace(/\\/gi, '');
+          console.log(this.result[1]);
+          this.options = {
+            chart: {
+              zoomType: 'x',
+              type: 'bar'
+            },
+            series: this.getResults ()
+          };
         }
       } catch (exception) {
         console.log('function problem');
@@ -118,4 +132,93 @@ export class FuncDetailComponent implements OnInit {
       console.log(exception);
     }
   }
+  onChartSelection (e: any) {
+    this.from = e.originalEvent.xAxis[0].min.toFixed(2);
+    this.to = e.originalEvent.xAxis[0].max.toFixed(2);
+  }
+  onSeriesMouseOver (e: any) {
+    this.serieName = e.context.name;
+  }
+  getResults () {
+    let arr = [];
+    console.log('*******************');
+    console.log(this.result[0]);
+    console.log(typeof this.result[0]);
+    if (Array.isArray(this.result[0])) {
+      for (let item of this.result[0]) {
+        arr.push(item);
+      }
+    } else {
+      if (typeof this.result[0] === 'object') {
+        for (let item of Object.keys(this.result[0])) {
+          console.log(item);
+          console.log(this.result[0][item]);
+          arr.push({'name': item === 'undefined' ? 'No output' : item, 'data': this.getNumbers(this.result[0][item])});
+          console.log(typeof item);
+          console.log(typeof this.result[0][item]);
+          console.log('here');
+        }
+      }
+      console.log(arr);
+    } return arr === [] ? false : arr;
+  }
+  getNumbers(value: any): Array<any> {
+    let arr = [];
+    if (typeof value === 'string') {
+      arr.push(value.length);
+    } else {
+      if (Array.isArray(value)) {
+        for (let item of value) {
+          if (typeof item === 'string') {
+            arr.push(item.length);
+          } else {
+            arr.push(this.getNumbers(item));
+          }
+        }
+      } else {
+        if (typeof value === 'number') {
+          arr.push(value);
+        } else {
+          if (typeof value === 'boolean') {
+            arr.push(value ? 1 : 0);
+          } else {
+            if (typeof value === 'object') {
+              for (let item2 of Object['values'](value)) {
+                arr.push(this.getNumbers(item2));
+              }
+            }
+          }
+        }
+      }
+    }
+    return arr;
+  }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

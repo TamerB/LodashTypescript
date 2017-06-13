@@ -1,6 +1,7 @@
 import { NgModule }             from '@angular/core';
 import { BrowserModule }        from '@angular/platform-browser';
-import {FormsModule, ReactiveFormsModule}          from '@angular/forms';
+import {ReactiveFormsModule}    from '@angular/forms';
+import {ChartModule}            from 'angular2-highcharts';
 
 import { AppComponent }         from './app.component';
 import { FuncDetailComponent }  from './func-detail.component';
@@ -12,7 +13,8 @@ import { AppRoutingModule }     from './app-routing.module';
   imports:      [
     BrowserModule,
     ReactiveFormsModule,
-    AppRoutingModule
+    AppRoutingModule,
+    ChartModule.forRoot(require('highcharts'))
   ],
   declarations: [
     AppComponent,
