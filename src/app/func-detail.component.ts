@@ -28,6 +28,7 @@ export class FuncDetailComponent implements OnInit {
   lodash: Lodash = new Lodash();
   model: any;
   param: Array<any> = [];
+  result: any = '';
   submitted = false;
   constructor(
     private funcService: FuncService,
@@ -72,7 +73,7 @@ export class FuncDetailComponent implements OnInit {
   }
   checkTyp(model: Func) {
     try {
-      let temp: Array<any> = [], x = '';
+      let temp: Array<any> = [];
       for (let item in model['value'].pars2) {
         this.param[item][0] = model['value'].pars2[item].par;
         if (this.param[item][0].startsWith('{') && this.param[item][0][this.param[item][0].length - 1] === '}') {
@@ -100,11 +101,15 @@ export class FuncDetailComponent implements OnInit {
         temp.push(this.param[item][1]);
       }
       try {
-        x = this.lodash[this.func.name](...temp);
-        if (Array.isArray(x) && x[0] === undefined) {
+        this.result = this.lodash[this.func.name](...temp);
+        if (Array.isArray(this.result) && this.result[0] === undefined) {
           console.log('wrong input');
-        } else
-          console.log(x);
+        } else {
+          this.result = JSON.stringify(this.result);
+          this.result = this.result.replace(/\"/gi, '');
+          this.result = this.result.replace(/\\/gi, '');
+          console.log(this.result);
+        }
       } catch (exception) {
         console.log('function problem');
       }

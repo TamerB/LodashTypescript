@@ -25,6 +25,9 @@
       <button type="submit" [disabled]="!myForm.valid">Submit</button>
     </form>
   </div>
+  <div *ngIf="result">
+    <h1>Output: </h1><h2>{{result}}</h2>
+  </div>
   <button (click)="goBack()">Back</button>
   <!--<div class="form-group" fromArryName="pars">
     <div *ngFor="let par of form.controls.pars.controls; let i=index;">
