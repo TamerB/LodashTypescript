@@ -25,8 +25,15 @@
       <button type="submit" [disabled]="!myForm.valid">Submit</button>
     </form>
   </div>
-  <div *ngIf="result">
-    <h1>Output: </h1><h2>{{result}}</h2>
+  <div *ngIf="result[0] !== ''">
+    <h1>Output: </h1><h2>{{result[1]}}</h2>
+    <div>
+      <chart [options]="options">
+        <series (mouseOver)="onSeriesMouseOver($event)">
+        </series>
+      </chart>
+      <p><b>{{serieName}}</b> is hovered<p>
+    </div>
   </div>
   <button (click)="goBack()">Back</button>
   <!--<div class="form-group" fromArryName="pars">
